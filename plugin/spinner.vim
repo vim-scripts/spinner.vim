@@ -1,121 +1,3 @@
-" spinner.vim : fast buffer switching plugin with only 3 keys.
-" Maintainer:   OMI TAKU
-" Version:      0.5
-" Last Change:  2009/12/02 19:00:00
-"
-" Introduction:
-" a basic idea is easy pressable key,
-" and quickly switchable search type .
-"
-" Basic Usage:
-" Default defined key map is
-"     <C-CR>     open next item .
-"     <S-CR>     open previous item .
-"     <C-S-CR>   switch spinner.vim search mode .
-"
-" spinner.vim search mode is switching, when you press <C-S-CR>.
-" Defined search mode is
-"     1. open next/previous buffer (initial) .
-"     2. open next/previous file in currently opened file directory .
-"     3. open next/previous most recently edited file (last 10 files) .
-"     4. open next/previous tab .
-"     5. open next/previous window .
-"     6. open next/previous quickfix line .
-"     7. open next/previous quickfix file .
-"
-" Spinner Search Mode Details:
-" 1.open next/previous buffer (initial) .
-"     <C-CR> open next buffer.
-"     <S-CR> open previous buffer.
-"   same with :bnext, :bNext .
-"
-" 2.open next/previous file in currently opened file directory .
-"     <C-CR> open alphabetically next file.
-"     <S-CR> open alphabetically previous file .
-"   opening files are searched in currently opened file directory.
-"
-"   current test version use code from
-"   nextfile : open the next or previous file
-"   (vimscript #2605)
-"
-" 3.open next/previous most recently edited file (last 10 files) .
-"     <C-CR> open alphabetically next file.
-"     <S-CR> open alphabetically previous file .
-"
-"   recently edited file path are stored at openinig file (limit 10 item).
-"   stored file is placed at
-"       $HOME/.vim_spinner_mru_files , or
-"       $VIM/.vim_spinner_mru_files , or
-"       $USERPROFILE/_vim_spinner_mru_files .
-"
-"   current test version use code from
-"   mru.vim : Plugin to manage Most Recently Used (MRU) files
-"   (vimscript #521)
-"
-" 4.open next/previous tab .
-"     <C-CR> go to next tab.
-"     <S-CR> go to previous tab.
-"   same with :tabnext, :tabNext .
-"
-" 5.open next/previous window .
-"     <C-CR> move cursor to next splitted window.
-"     <S-CR> move cursor to previous splitted window.
-"
-" 6.open next/previous quickfix line .
-"     <C-CR> go to next error in quickfix list.
-"     <S-CR> go to previous error in quickfix list.
-"   same with :cnext, :cNext .
-"
-" 7.open next/previous quickfix file .
-"     <C-CR> go to next error file in quickfix list.
-"     <S-CR> go to previous error file in quickfix list.
-"   same with :cnfile, :cNfile .
-"
-" Other Usage:
-" switch search mode with number.
-"     1<C-S-CR>  set switch spinner.vim mode to buffer type.
-"     2<C-S-CR>  set switch spinner.vim mode to same_directory_file type.
-"     3<C-S-CR>  set switch spinner.vim mode to most_recently_edited type.
-"     4<C-S-CR>  set switch spinner.vim mode to tab type.
-"     5<C-S-CR>  set switch spinner.vim mode to window type.
-"     6<C-S-CR>  set switch spinner.vim mode to quickfix type.
-"     7<C-S-CR>  set switch spinner.vim mode to quickfix_file type.
-"
-" this key map display current spinner search mode.
-"     <A-CR>     display current spinner mode .
-"     <M-CR>     display current spinner mode .
-"
-" Configurations:
-" Action Key Map:
-"     let g:spinner_nextitem_key = {mapping}
-"     let g:spinner_previousitem_key = {mapping}
-"     let g:spinner_switchmode_key = {mapping}
-"     let g:spinner_displaymode_key = {mapping}
-"
-"     for example,
-"     let g:spinner_nextitem_key = ',n'
-"     let g:spinner_previousitem_key = ',p'
-"     let g:spinner_switchmode_key = ',s'
-"     let g:spinner_displaymode_key = ',d'
-"
-" Initial Search Type:
-"   let g:spinner_initial_search_type = {seach type number}
-"
-"   for example,
-"   let g:spinner_initial_search_type = 2
-"
-"       1 : buffer (default)
-"       2 : same_directory_file
-"       3 : most_recently_edited
-"       4 : tab
-"       5 : window
-"       6 : quickfix
-"       7 : quickfix_file
-"
-" Install Details:
-" Unzip spinner.zip, and drop your $HOME/.vim directory (unix),
-" or drop $HOME/vimfiles directory (Windows).
-
 if &cp || exists("g:loaded_spinner")
     finish
 endif
@@ -214,11 +96,19 @@ function! g:CurrentSpinnerMode()
     return s:modes[s:current_mode]
 endfunction
 function! g:DisplayCurrentSpinnerMode()
-    echohl None | echo 'switch spinner mode [' . s:modes[s:current_mode] . '].' | echohl None
+    echohl None | echo 'current spinner mode [' . s:modes[s:current_mode] . '].' | echohl None
 endfunction
 
 function! s:InitializeSpinner()
     call s:SwitchSpinnerModeTo(s:current_mode)
+
+    " Load the MRU list on plugin startup
+    for i in s:modes
+        if i == 'most_recently_edited'
+            call spinner#most_recently_edited#MRU_LoadList()
+            break
+        endif
+    endfor
 endfunction
 call s:InitializeSpinner()
 
@@ -226,7 +116,7 @@ let &cpo = s:save_cpo
 finish
 
 ==============================================================================
-spinner.vim : fast buffer switching plugin with only 3 keys.
+spinner.vim : fast buffer/file/tab/... switching plugin with only 3 keys.
 ------------------------------------------------------------------------------
 $VIMRUNTIMEPATH/plugin/spinner.vim
 $VIMRUNTIMEPATH/autoload/spinner/buffer.vim
@@ -240,6 +130,6 @@ $VIMRUNTIMEPATH/autoload/spinner/window.vim
 author  : OMI TAKU
 url     : http://nanasi.jp/
 email   : mail@nanasi.jp
-version : 2009/12/02 19:00:00
+version : 2009/12/03 20:20:00
 ==============================================================================
 " vim: set ff=unix et ft=vim nowrap :

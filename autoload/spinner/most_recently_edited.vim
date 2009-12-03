@@ -94,9 +94,6 @@ function! spinner#most_recently_edited#MRU_AddFile(acmd_bufnr)
     call spinner#most_recently_edited#MRU_SaveList()
 endfunction
 
-" Load the MRU list on plugin startup
-call spinner#most_recently_edited#MRU_LoadList()
-
 " Autocommands to detect the most recently used files
 autocmd BufRead * call spinner#most_recently_edited#MRU_AddFile(expand('<abuf>'))
 autocmd BufNewFile * call spinner#most_recently_edited#MRU_AddFile(expand('<abuf>'))
@@ -107,7 +104,6 @@ autocmd BufWritePost * call spinner#most_recently_edited#MRU_AddFile(expand('<ab
 " files. Use the following autocmds to prevent this.
 autocmd QuickFixCmdPre *vimgrep* let g:spinner#most_recently_edited#MRU_LIST_LOCKED = 1
 autocmd QuickFixCmdPost *vimgrep* let g:spinner#most_recently_edited#MRU_LIST_LOCKED = 0
-
 
 func! spinner#most_recently_edited#get_idx_of_list(lis, elem)
     let i = 0
