@@ -7,6 +7,16 @@ function! spinner#same_directory_file#previous()
     call spinner#same_directory_file#open_next_file(0)
 endfunction
 
+function! spinner#same_directory_file#load()
+    let g:spinner#same_directory_file#exeextmap = {}
+    if exists('$PATHEXT')
+        let l:list = split($PATHEXT, ';')
+        for l:i in l:list
+            let g:spinner#same_directory_file#exeextmap[l:i] = 1
+        endfor
+    endif
+endfunction
+
 
 func! spinner#same_directory_file#warn(msg)
     echohl WarningMsg
@@ -15,21 +25,21 @@ func! spinner#same_directory_file#warn(msg)
 endfunc
 
 func! spinner#same_directory_file#get_idx_of_list(lis, elem)
-    let i = 0
-    while i < len(a:lis)
-        if a:lis[i] ==# a:elem
-            return i
+    let l:i = 0
+    while l:i < len(a:lis)
+        if a:lis[l:i] ==# a:elem
+            return l:i
         endif
-        let i = i + 1
+        let l:i = l:i + 1
     endwhile
     throw "not found"
 endfunc
 
 func! spinner#same_directory_file#glob_list(expr)
-    let files = split(glob(a:expr), '\n')
+    let l:files = split(glob(a:expr), '\n')
     " get rid of '.' and '..'
-    call filter(files, 'fnamemodify(v:val, ":t") !=# "." && fnamemodify(v:val, ":t") !=# ".."')
-    return files
+    call filter(l:files, 'fnamemodify(v:val, ":t") !=# "." && fnamemodify(v:val, ":t") !=# ".."')
+    return l:files
 endfunc
 
 func! spinner#same_directory_file#sort_compare(i, j)
@@ -38,37 +48,41 @@ func! spinner#same_directory_file#sort_compare(i, j)
 endfunc
 
 func! spinner#same_directory_file#get_files_list(...)
-    let glob_expr = a:0 == 0 ? '*' : a:1
     " get files list
-    let globed = spinner#same_directory_file#glob_list(expand('%:p:h') . '/' . glob_expr)
+    let l:glob_expr = a:0 == 0 ? '*' : a:1
+    let l:globed = spinner#same_directory_file#glob_list(expand('%:p:h') . '/' . l:glob_expr)
 
-    let files = []
-    for i in globed
-        if isdirectory(i)
+    let l:files = []
+    for l:i in l:globed
+        if isdirectory(l:i)
             continue
         endif
-        if ! filereadable(i)
+        if ! filereadable(l:i)
+            continue
+        endif
+        let l:ext = fnamemodify(l:i, ":e")
+        if has_key(g:spinner#same_directory_file#exeextmap, l:ext)
             continue
         endif
 
-        call add(files, i)
+        call add(l:files, l:i)
     endfor
 
-    return sort(files, 'spinner#same_directory_file#sort_compare')
+    return sort(l:files, 'spinner#same_directory_file#sort_compare')
 endfunc
 
 func! spinner#same_directory_file#get_next_idx(files, advance, cnt)
     try
         " get current file idx
-        let tailed = map(copy(a:files), 'fnamemodify(v:val, ":t")')
-        let idx = spinner#same_directory_file#get_idx_of_list(tailed, expand('%:t'))
+        let l:tailed = map(copy(a:files), 'fnamemodify(v:val, ":t")')
+        let l:idx = spinner#same_directory_file#get_idx_of_list(l:tailed, expand('%:t'))
         " move to next or previous
-        let idx = a:advance ? idx + a:cnt : idx - a:cnt
+        let l:idx = a:advance ? l:idx + a:cnt : l:idx - a:cnt
     catch /^not found$/
         " open the first file.
-        let idx = 0
+        let l:idx = 0
     endtry
-    return idx
+    return l:idx
 endfunc
 
 func! spinner#same_directory_file#open_next_file(advance)
@@ -76,26 +90,26 @@ func! spinner#same_directory_file#open_next_file(advance)
         return spinner#same_directory_file#warn("current file is empty.")
     endif
 
-    let files = spinner#same_directory_file#get_files_list()
-    if empty(files) | return | endif
-    let idx   = spinner#same_directory_file#get_next_idx(files, a:advance, v:count1)
+    let l:files = spinner#same_directory_file#get_files_list()
+    if empty(l:files) | return | endif
+    let l:idx   = spinner#same_directory_file#get_next_idx(l:files, a:advance, v:count1)
 
-    if 0 <= idx && idx < len(files)
-        " can access to files[idx]
-        execute 'edit ' . fnameescape(files[idx])
+    if 0 <= l:idx && l:idx < len(l:files)
+        " can access to files[l:idx]
+        execute 'edit ' . fnameescape(l:files[l:idx])
     else
         " wrap around
-        if idx < 0
+        if l:idx < 0
             " fortunately recent LL languages support negative index :)
-            let idx = -(abs(idx) % len(files))
+            let l:idx = -(abs(l:idx) % len(l:files))
             " But if you want to access to 'real' index:
-            " if idx != 0
-            "     let idx = len(files) + idx
+            " if l:idx != 0
+            "     let l:idx = len(l:files) + l:idx
             " endif
         else
-            let idx = idx % len(files)
+            let l:idx = l:idx % len(l:files)
         endif
-        execute 'edit ' . fnameescape(files[idx])
+        execute 'edit ' . fnameescape(l:files[l:idx])
     endif
 endfunc
 

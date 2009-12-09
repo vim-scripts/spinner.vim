@@ -7,3 +7,6 @@ function! spinner#tab#previous()
     tabNext
 endfunction
 
+function! spinner#tab#load()
+endfunction
+

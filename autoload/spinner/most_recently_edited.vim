@@ -1,4 +1,17 @@
 
+function! spinner#most_recently_edited#next()
+    call spinner#most_recently_edited#open_next_file(1)
+endfunction
+
+function! spinner#most_recently_edited#previous()
+    call spinner#most_recently_edited#open_next_file(0)
+endfunction
+
+function! spinner#most_recently_edited#load()
+    call spinner#most_recently_edited#MRU_LoadList()
+endfunction
+
+
 if has('unix') || has('macunix')
     let spinner#most_recently_edited#SPINNER_MRU_FILE = $HOME . '/.vim_spinner_mru_files'
 else
@@ -42,7 +55,7 @@ endfunction
 " Save the MRU list to the file
 function! spinner#most_recently_edited#MRU_SaveList()
     let l = []
-    call add(l, '# Most recently edited files in Vim (version 3.0)')
+    call add(l, '# Most recently edited files in Vim')
     call extend(l, g:spinner#most_recently_edited#MRU_FILES)
     call writefile(l, g:spinner#most_recently_edited#SPINNER_MRU_FILE)
 endfunction
@@ -159,14 +172,4 @@ func! spinner#most_recently_edited#open_next_file(advance)
         execute 'edit ' . fnameescape(files[idx])
     endif
 endfunc
-
-function! spinner#most_recently_edited#next()
-    call spinner#most_recently_edited#open_next_file(1)
-endfunction
-
-function! spinner#most_recently_edited#previous()
-    call spinner#most_recently_edited#open_next_file(0)
-endfunction
-
-
 

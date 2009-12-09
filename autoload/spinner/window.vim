@@ -7,3 +7,6 @@ function! spinner#window#previous()
     wincmd W
 endfunction
 
+function! spinner#window#load()
+endfunction
+

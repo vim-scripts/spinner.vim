@@ -7,3 +7,6 @@ function! spinner#buffer#previous()
     bNext
 endfunction
 
+function! spinner#buffer#load()
+endfunction
+

@@ -105,6 +105,9 @@ ACTION KEY MAP                             *spinner-configurations-action-key*
     let g:spinner_switchmode_key = ',s'
     let g:spinner_displaymode_key = ',d'
 <
+caution!!
+default mapping is for GUI. default mapping do not work on
+Windows DOS prompt, PowerShell, Mac OSX Terminal, and all that.
                                                *g:spinner_initial_search_type*
 INITIAL SEARCH TYPE               *spinner-configurations-initial-search-mode*
 >
@@ -122,8 +125,12 @@ INITIAL SEARCH TYPE               *spinner-configurations-initial-search-mode*
       6         quickfix
       7         quickfix_file
 
-SOURCE REPOSITORY                            *spinner-issue* *spinner-project*
+SOURCE REPOSITORY                                            *spinner-project*
 http://code.google.com/p/spinner-vim-plugin/
+
+CURRENT ISSUE                                                  *spinner-issue*
+- In "most_recently_edited" mode, "next file" command can only open last
+  file. because history managed file will be updated when opening new file.
 
 INSTALL DETAILS                                              *spinner-install*
 1. copy files to .vim/vimfiles directory.
@@ -145,5 +152,9 @@ HISTORY                                                      *spinner-history*
   - update some displaying messages.
   - add spinner.vim help document.
   - fix most_recently_edited mode initialize bug.
+
+0.5.2   2009/12/09 18:00:00
+  - update plugins loading logic.
+  - same_directory_file mode will not open $PATHEXT extension file.
 
  vim:tw=78:ts=8:ft=help:norl:

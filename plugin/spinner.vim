@@ -102,12 +102,9 @@ endfunction
 function! s:InitializeSpinner()
     call s:SwitchSpinnerModeTo(s:current_mode)
 
-    " Load the MRU list on plugin startup
+    " load plugins
     for i in s:modes
-        if i == 'most_recently_edited'
-            call spinner#most_recently_edited#MRU_LoadList()
-            break
-        endif
+        execute 'call spinner#' . i . '#load()'
     endfor
 endfunction
 call s:InitializeSpinner()
